@@ -905,3 +905,4 @@ export default function App() {
   if (user.role==="consultant") return <ConsultantArea {...props}/>;
   if (user.role==="admin")      return <AdminArea      {...props}/>;
 }
+// Auto-login component - adicione isso antes do export default
