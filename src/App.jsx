@@ -169,7 +169,7 @@ function LoginScreen({ onLogin, dark, toggleDark }) {
                 <div style={{ fontSize:15, fontWeight:700, color:C.text, marginBottom:6 }}>Bem-vindo de volta</div>
                 <div style={{ fontSize:12, color:C.muted }}>Entre com sua conta Google para acessar a plataforma</div>
               </div>
-              <button onClick={()=>setPicking(true)}
+              <button onClick={async ()=>{ const {supabase} = await import("./lib/supabase"); await supabase.auth.signInWithOAuth({provider:"google",options:{redirectTo:window.location.origin}})}}
                 style={{ width:"100%", padding:"13px 20px", borderRadius:10, border:`1px solid ${C.border}`, background:C.card, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:12, fontSize:14, fontWeight:600, color:C.text }}>
                 <svg width="20" height="20" viewBox="0 0 48 48">
                   <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
