@@ -906,3 +906,32 @@ export default function App() {
   if (user.role==="admin")      return <AdminArea      {...props}/>;
 }
 // Auto-login component - adicione isso antes do export default
+
+// Wrapper que conecta sessão Supabase ao App
+import { useEffect } from "react";
+export function AppWithAuth({ googleUser, onLogout }) {
+  const C = getC(true);
+  const [profile, setProfile] = useState(null);
+  const [dark, setDark] = useState(true);
+  const toggleDark = () => setDark(d => !d);
+
+  useEffect(() => {
+    if (googleUser) {
+      import('./lib/supabase').then(({ supabase }) => {
+        supabase.from('profiles').select('*').eq('id', googleUser.id).single()
+          .then(({ data }) => {
+            if (data) setProfile({ ...data, name: data.full_name, email: data.email });
+            else setProfile({ role: 'client', name: googleUser.email, email: googleUser.email });
+          });
+      });
+    }
+  }, [googleUser]);
+
+  if (!profile) return <div style={{background:'#070d1a',height:'100vh',display:'flex',alignItems:'center',justifyContent:'center',color:'white'}}>Carregando perfil...</div>;
+
+  const props = { user: profile, onLogout, dark, toggleDark };
+  if (profile.role === 'admin') return <AdminArea {...props}/>;
+  if (profile.role === 'vendor') return <VendorArea {...props}/>;
+  if (profile.role === 'consultant') return <ConsultantArea {...props}/>;
+  return <ClientArea {...props}/>;
+}
