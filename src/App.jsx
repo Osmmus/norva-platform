@@ -1,5 +1,5 @@
 import { useState, createContext, useContext } from "react";
-import { LayoutDashboard, FileText, Target, BookOpen, Star, Calendar, DollarSign, TrendingUp, Users, Phone, BarChart3, Activity, LogOut, Bell, ArrowUpRight, ArrowDownRight, Clock, Bot, Sun, Moon, UserPlus, Shield } from "lucide-react";
+import { LayoutDashboard, FileText, Target, BookOpen, Star, Calendar, DollarSign, TrendingUp, Users, Phone, BarChart3, Activity, LogOut, Bell, ArrowUpRight, ArrowDownRight, Clock, Bot, Sun, Moon, UserPlus, Shield, Check, ChevronDown, MessageCircle } from "lucide-react";
 
 const ThemeCtx = createContext({});
 const useTheme = () => useContext(ThemeCtx);
@@ -18,10 +18,48 @@ function getC(dark) {
   };
 }
 
+// ─── PLANOS COM LINKS MERCADO PAGO ─────────────────────────
 const PLANS = [
-  { id:"essencial", label:"Essencial", price:19.90 },
-  { id:"progresso", label:"Progresso", price:29.90 },
-  { id:"prime",     label:"Prime",     price:49.90 },
+  {
+    id: "essencial",
+    label: "Essencial",
+    price: 19.90,
+    link: "https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=7e92478e255f4f1dab81610e74cbd293",
+    features: [
+      "Dashboard financeiro completo",
+      "Relatório com IA mensal",
+      "Conteúdo educacional",
+      "Metas financeiras",
+    ],
+  },
+  {
+    id: "progresso",
+    label: "Progresso",
+    price: 59.90,
+    popular: true,
+    link: "https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=6b0cb448d52243f3b746831c1add655e",
+    features: [
+      "Tudo do Essencial",
+      "Relatórios ilimitados com IA",
+      "Parceiros com descontos exclusivos",
+      "1 consultoria por mês",
+      "Suporte prioritário",
+    ],
+  },
+  {
+    id: "prime",
+    label: "Prime",
+    price: 119.90,
+    link: "https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=f6352678153946309699a32c875f6f04",
+    features: [
+      "Tudo do Progresso",
+      "Consultorias ilimitadas",
+      "Planejamento financeiro personalizado",
+      "Acesso antecipado a novidades",
+      "Grupo VIP exclusivo",
+      "Atendimento dedicado",
+    ],
+  },
 ];
 
 const MOCK_ACCOUNTS = [
@@ -146,67 +184,255 @@ function ThemeToggle({ dark, toggle }) {
   );
 }
 
-// ─── LOGIN ─────────────────────────────────────────────────
+// ─── LANDING PAGE + LOGIN ──────────────────────────────────
 function LoginScreen({ onLogin, dark, toggleDark }) {
   const C = getC(dark);
+  const [showLogin, setShowLogin] = useState(false);
   const [picking, setPicking] = useState(false);
+
   return (
-    <div style={{ minHeight:"100vh", background:C.bg, display:"flex", alignItems:"center", justifyContent:"center", padding:24, position:"relative" }}>
-      <div style={{ position:"absolute", top:16, right:20 }}>
-        <ThemeToggle dark={dark} toggle={toggleDark}/>
-      </div>
-      <div style={{ width:"100%", maxWidth:400 }}>
-        <div style={{ textAlign:"center", marginBottom:32 }}>
-          <div style={{ display:"flex", justifyContent:"center", marginBottom:14 }}>
-            <NorvaLogo size="lg" C={C}/>
+    <div style={{ minHeight:"100vh", background:C.bg, color:C.text, fontFamily:"system-ui,sans-serif", position:"relative" }}>
+      {/* HEADER */}
+      <div style={{ position:"fixed", top:0, left:0, right:0, zIndex:100, background:`${C.bg}ee`, backdropFilter:"blur(12px)", borderBottom:`1px solid ${C.border}` }}>
+        <div style={{ maxWidth:1100, margin:"0 auto", padding:"12px 24px", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+          <NorvaLogo size="sm" C={C}/>
+          <div style={{ display:"flex", gap:10, alignItems:"center" }}>
+            <ThemeToggle dark={dark} toggle={toggleDark}/>
+            <button onClick={()=>{ setShowLogin(true); window.scrollTo({top:0,behavior:'smooth'}); }}
+              style={{ background:"linear-gradient(135deg,#6c3fff,#00cfff)", color:"#fff", border:"none", borderRadius:8, padding:"8px 18px", cursor:"pointer", fontSize:13, fontWeight:600 }}>
+              Entrar
+            </button>
           </div>
-          <div style={{ color:C.muted, fontSize:13, marginTop:4 }}>Plataforma de Consultoria Financeira</div>
-        </div>
-        <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:16, padding:32 }}>
-          {!picking ? (
-            <>
-              <div style={{ textAlign:"center", marginBottom:24 }}>
-                <div style={{ fontSize:15, fontWeight:700, color:C.text, marginBottom:6 }}>Bem-vindo de volta</div>
-                <div style={{ fontSize:12, color:C.muted }}>Entre com sua conta Google para acessar a plataforma</div>
-              </div>
-              <button onClick={async ()=>{ const {supabase} = await import("./lib/supabase"); await supabase.auth.signInWithOAuth({provider:"google",options:{redirectTo:window.location.origin}})}}
-                style={{ width:"100%", padding:"13px 20px", borderRadius:10, border:`1px solid ${C.border}`, background:C.card, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:12, fontSize:14, fontWeight:600, color:C.text }}>
-                <svg width="20" height="20" viewBox="0 0 48 48">
-                  <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-                  <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-                  <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-                  <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-                </svg>
-                Entrar com Google
-              </button>
-              <div style={{ textAlign:"center", marginTop:18, fontSize:11, color:C.muted }}>
-                Não tem acesso? Fale com um administrador Norva.
-              </div>
-            </>
-          ) : (
-            <>
-              <div style={{ fontSize:13, fontWeight:700, color:C.text, marginBottom:4 }}>Escolher conta Google</div>
-              <div style={{ fontSize:11, color:C.muted, marginBottom:16 }}>Demonstração — selecione seu perfil</div>
-              {MOCK_ACCOUNTS.map(acc => (
-                <button key={acc.id} onClick={()=>onLogin(acc)}
-                  style={{ display:"flex", alignItems:"center", gap:12, width:"100%", padding:"12px 14px", borderRadius:10, border:`1px solid ${C.border}`, background:C.inputBg, cursor:"pointer", marginBottom:8, textAlign:"left" }}>
-                  <div style={{ width:36, height:36, borderRadius:"50%", background:"linear-gradient(135deg,#6c3fff,#00cfff)", display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontWeight:800, fontSize:13, flexShrink:0 }}>{acc.avatar}</div>
-                  <div>
-                    <div style={{ fontSize:13, fontWeight:600, color:C.text }}>{acc.name}</div>
-                    <div style={{ fontSize:11, color:C.muted }}>{acc.email}</div>
-                  </div>
-                  <div style={{ marginLeft:"auto" }}>
-                    <span style={badge(acc.role==="admin"?"#8b5cf6":acc.role==="vendor"?"#10b981":acc.role==="consultant"?"#f59e0b":"#6c3fff")}>
-                      {acc.role==="admin"?"Admin":acc.role==="vendor"?"Vendedor":acc.role==="consultant"?"Consultor":"Associado"}
-                    </span>
-                  </div>
-                </button>
-              ))}
-              <button onClick={()=>setPicking(false)} style={{ ...btnO(C), marginTop:4, width:"100%", textAlign:"center" }}>← Voltar</button>
-            </>
-          )}
         </div>
       </div>
+
+      {/* HERO */}
+      <div style={{ paddingTop:100, paddingBottom:60, textAlign:"center", maxWidth:700, margin:"0 auto", padding:"120px 24px 60px" }}>
+        <div style={{ display:"inline-block", background:`${C.accent}18`, border:`1px solid ${C.accent}33`, borderRadius:20, padding:"4px 14px", fontSize:11, color:C.accentL, fontWeight:600, marginBottom:20 }}>
+          Consultoria Financeira Inteligente
+        </div>
+        <h1 style={{ fontSize:38, fontWeight:900, lineHeight:1.15, marginBottom:16, marginTop:0 }}>
+          Organize suas finanças com{" "}
+          <span style={{ background:"linear-gradient(135deg,#6c3fff,#00cfff)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>
+            inteligência artificial
+          </span>
+        </h1>
+        <p style={{ fontSize:16, color:C.muted, lineHeight:1.7, marginBottom:32, maxWidth:520, margin:"0 auto 32px" }}>
+          Dashboard financeiro, relatórios com IA, metas, consultorias e descontos exclusivos com parceiros. Tudo em uma plataforma simples e acessível.
+        </p>
+        <div style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap" }}>
+          <button onClick={()=>document.getElementById('planos')?.scrollIntoView({behavior:'smooth'})}
+            style={{ background:"linear-gradient(135deg,#6c3fff,#00cfff)", color:"#fff", border:"none", borderRadius:10, padding:"14px 32px", cursor:"pointer", fontSize:15, fontWeight:700 }}>
+            Ver planos
+          </button>
+          <button onClick={()=>window.open("https://wa.me/5521999999999","_blank")}
+            style={{ background:"transparent", color:C.accentL, border:`1px solid ${C.accentL}44`, borderRadius:10, padding:"14px 28px", cursor:"pointer", fontSize:14, fontWeight:600, display:"flex", alignItems:"center", gap:8 }}>
+            <MessageCircle size={16}/> Falar no WhatsApp
+          </button>
+        </div>
+      </div>
+
+      {/* COMO FUNCIONA */}
+      <div style={{ maxWidth:900, margin:"0 auto", padding:"40px 24px 60px" }}>
+        <h2 style={{ textAlign:"center", fontSize:24, fontWeight:800, marginBottom:8, marginTop:0 }}>Como funciona</h2>
+        <p style={{ textAlign:"center", color:C.muted, fontSize:14, marginBottom:32, marginTop:0 }}>Três passos para transformar sua vida financeira</p>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:20 }}>
+          {[
+            { step:"1", emoji:"📝", title:"Assine um plano", desc:"Escolha o plano ideal e assine em menos de 2 minutos pelo Mercado Pago." },
+            { step:"2", emoji:"📊", title:"Preencha seus dados", desc:"Informe sua renda, gastos e objetivos no dashboard financeiro." },
+            { step:"3", emoji:"🤖", title:"Receba seu diagnóstico", desc:"A IA analisa suas finanças e gera recomendações personalizadas." },
+          ].map((item) => (
+            <div key={item.step} style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:14, padding:24, textAlign:"center" }}>
+              <div style={{ fontSize:32, marginBottom:10 }}>{item.emoji}</div>
+              <div style={{ background:"linear-gradient(135deg,#6c3fff,#00cfff)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", fontSize:12, fontWeight:800, marginBottom:6 }}>PASSO {item.step}</div>
+              <div style={{ fontSize:15, fontWeight:700, marginBottom:6, color:C.text }}>{item.title}</div>
+              <div style={{ fontSize:12, color:C.muted, lineHeight:1.6 }}>{item.desc}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* BENEFÍCIOS */}
+      <div style={{ maxWidth:900, margin:"0 auto", padding:"20px 24px 60px" }}>
+        <h2 style={{ textAlign:"center", fontSize:24, fontWeight:800, marginBottom:8, marginTop:0 }}>Por que a Norva?</h2>
+        <p style={{ textAlign:"center", color:C.muted, fontSize:14, marginBottom:32, marginTop:0 }}>Benefícios que fazem a diferença no seu bolso</p>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(2, 1fr)", gap:16 }}>
+          {[
+            { emoji:"🤖", title:"Relatório com IA", desc:"Diagnóstico financeiro gerado por inteligência artificial com recomendações práticas." },
+            { emoji:"🎯", title:"Metas financeiras", desc:"Defina e acompanhe seus objetivos: quitar dívidas, poupar, investir." },
+            { emoji:"👨‍💼", title:"Consultorias ao vivo", desc:"Sessões com consultores financeiros certificados para dúvidas específicas." },
+            { emoji:"💰", title:"Descontos exclusivos", desc:"Parceiros Norva oferecem descontos em farmácias, academias, clínicas e mais." },
+            { emoji:"📈", title:"Dashboard completo", desc:"Visão geral de receitas, gastos, saldo e evolução financeira mês a mês." },
+            { emoji:"📚", title:"Conteúdo educacional", desc:"Cursos e materiais sobre orçamento, investimentos, impostos e aposentadoria." },
+          ].map((item, i) => (
+            <div key={i} style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:12, padding:20, display:"flex", gap:14, alignItems:"flex-start" }}>
+              <div style={{ fontSize:26, flexShrink:0 }}>{item.emoji}</div>
+              <div>
+                <div style={{ fontSize:14, fontWeight:700, marginBottom:4, color:C.text }}>{item.title}</div>
+                <div style={{ fontSize:12, color:C.muted, lineHeight:1.6 }}>{item.desc}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* PLANOS COM MERCADO PAGO */}
+      <div id="planos" style={{ maxWidth:1000, margin:"0 auto", padding:"20px 24px 60px" }}>
+        <h2 style={{ textAlign:"center", fontSize:24, fontWeight:800, marginBottom:8, marginTop:0 }}>Escolha seu plano</h2>
+        <p style={{ textAlign:"center", color:C.muted, fontSize:14, marginBottom:32, marginTop:0 }}>Cancele quando quiser. Sem multa, sem burocracia.</p>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:20, alignItems:"stretch" }}>
+          {PLANS.map((plan) => (
+            <div key={plan.id} style={{
+              background:C.card,
+              border: plan.popular ? `2px solid #6c3fff` : `1px solid ${C.border}`,
+              borderRadius:16,
+              padding:28,
+              display:"flex",
+              flexDirection:"column",
+              position:"relative",
+              transform: plan.popular ? "scale(1.04)" : "none",
+              boxShadow: plan.popular ? "0 8px 40px #6c3fff22" : "none",
+            }}>
+              {plan.popular && (
+                <div style={{ position:"absolute", top:-12, left:"50%", transform:"translateX(-50%)", background:"linear-gradient(135deg,#6c3fff,#00cfff)", color:"#fff", padding:"4px 16px", borderRadius:20, fontSize:11, fontWeight:700 }}>
+                  Mais popular
+                </div>
+              )}
+              <div style={{ fontSize:13, fontWeight:700, color:C.accentL, marginBottom:4 }}>{plan.label}</div>
+              <div style={{ display:"flex", alignItems:"baseline", gap:4, marginBottom:4 }}>
+                <span style={{ fontSize:36, fontWeight:900, color:C.text }}>R$ {plan.price.toFixed(2).replace(".",",")}</span>
+                <span style={{ fontSize:13, color:C.muted }}>/mês</span>
+              </div>
+              <div style={{ fontSize:11, color:C.muted, marginBottom:20 }}>Cobrado mensalmente via Mercado Pago</div>
+              <div style={{ flex:1 }}>
+                {plan.features.map((f, i) => (
+                  <div key={i} style={{ display:"flex", gap:8, alignItems:"center", marginBottom:10 }}>
+                    <Check size={14} color={C.green} style={{ flexShrink:0 }}/>
+                    <span style={{ fontSize:12, color:C.text }}>{f}</span>
+                  </div>
+                ))}
+              </div>
+              <button
+                onClick={() => window.open(plan.link, "_blank")}
+                style={{
+                  width:"100%",
+                  padding:"13px 20px",
+                  borderRadius:10,
+                  border:"none",
+                  cursor:"pointer",
+                  fontSize:14,
+                  fontWeight:700,
+                  marginTop:20,
+                  background: plan.popular ? "linear-gradient(135deg,#6c3fff,#00cfff)" : `${C.accent}18`,
+                  color: plan.popular ? "#fff" : C.accentL,
+                }}>
+                Assinar {plan.label}
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* DEPOIMENTOS */}
+      <div style={{ maxWidth:900, margin:"0 auto", padding:"20px 24px 60px" }}>
+        <h2 style={{ textAlign:"center", fontSize:24, fontWeight:800, marginBottom:8, marginTop:0 }}>O que dizem nossos associados</h2>
+        <p style={{ textAlign:"center", color:C.muted, fontSize:14, marginBottom:32, marginTop:0 }}>Histórias reais de quem transformou suas finanças</p>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:16 }}>
+          {[
+            { name:"Mariana S.", text:"Em 3 meses consegui quitar minha dívida do cartão seguindo o relatório da IA. Incrível!", plan:"Prime" },
+            { name:"Rafael C.", text:"O dashboard me mostrou onde eu estava gastando demais. Economizei R$ 800 no primeiro mês.", plan:"Progresso" },
+            { name:"Juliana M.", text:"As consultorias me ajudaram a montar minha reserva de emergência. Recomendo muito!", plan:"Prime" },
+          ].map((d, i) => (
+            <div key={i} style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:12, padding:20 }}>
+              <div style={{ fontSize:22, marginBottom:10 }}>⭐⭐⭐⭐⭐</div>
+              <div style={{ fontSize:12, color:C.text, lineHeight:1.7, marginBottom:14, fontStyle:"italic" }}>"{d.text}"</div>
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                <div style={{ fontSize:13, fontWeight:700, color:C.text }}>{d.name}</div>
+                <span style={badge(C.accent)}>Plano {d.plan}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* CTA FINAL */}
+      <div style={{ maxWidth:600, margin:"0 auto", padding:"20px 24px 80px", textAlign:"center" }}>
+        <div style={{ background:`linear-gradient(135deg, #6c3fff15, #00cfff10)`, border:`1px solid #6c3fff33`, borderRadius:20, padding:40 }}>
+          <h2 style={{ fontSize:22, fontWeight:800, marginBottom:8, marginTop:0 }}>Pronto para organizar suas finanças?</h2>
+          <p style={{ color:C.muted, fontSize:13, marginBottom:24, marginTop:0 }}>Comece agora com o plano Essencial por apenas R$ 19,90/mês</p>
+          <div style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap" }}>
+            <button onClick={()=>document.getElementById('planos')?.scrollIntoView({behavior:'smooth'})}
+              style={{ background:"linear-gradient(135deg,#6c3fff,#00cfff)", color:"#fff", border:"none", borderRadius:10, padding:"13px 28px", cursor:"pointer", fontSize:14, fontWeight:700 }}>
+              Escolher meu plano
+            </button>
+            <button onClick={()=>window.open("https://wa.me/5521999999999","_blank")}
+              style={{ background:"transparent", color:C.accentL, border:`1px solid ${C.accentL}44`, borderRadius:10, padding:"13px 24px", cursor:"pointer", fontSize:13, fontWeight:600, display:"flex", alignItems:"center", gap:8 }}>
+              <MessageCircle size={15}/> WhatsApp
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* FOOTER */}
+      <div style={{ borderTop:`1px solid ${C.border}`, padding:"20px 24px", textAlign:"center" }}>
+        <NorvaLogo size="sm" C={C}/>
+        <div style={{ fontSize:11, color:C.muted, marginTop:10 }}>© 2025 Norva Consultoria. Todos os direitos reservados.</div>
+      </div>
+
+      {/* MODAL LOGIN */}
+      {showLogin && (
+        <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.6)", backdropFilter:"blur(6px)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:200, padding:24 }}
+          onClick={(e) => { if (e.target === e.currentTarget) setShowLogin(false); }}>
+          <div style={{ width:"100%", maxWidth:400, background:C.card, border:`1px solid ${C.border}`, borderRadius:16, padding:32, position:"relative" }}>
+            <button onClick={()=>setShowLogin(false)} style={{ position:"absolute", top:12, right:16, background:"transparent", border:"none", color:C.muted, cursor:"pointer", fontSize:20 }}>×</button>
+            {!picking ? (
+              <>
+                <div style={{ textAlign:"center", marginBottom:24 }}>
+                  <div style={{ display:"flex", justifyContent:"center", marginBottom:14 }}>
+                    <NorvaLogo size="lg" C={C}/>
+                  </div>
+                  <div style={{ fontSize:15, fontWeight:700, color:C.text, marginBottom:6 }}>Bem-vindo de volta</div>
+                  <div style={{ fontSize:12, color:C.muted }}>Entre com sua conta Google para acessar a plataforma</div>
+                </div>
+                <button onClick={async ()=>{ const {supabase} = await import("./lib/supabase"); await supabase.auth.signInWithOAuth({provider:"google",options:{redirectTo:window.location.origin}})}}
+                  style={{ width:"100%", padding:"13px 20px", borderRadius:10, border:`1px solid ${C.border}`, background:C.inputBg, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:12, fontSize:14, fontWeight:600, color:C.text }}>
+                  <svg width="20" height="20" viewBox="0 0 48 48">
+                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                  </svg>
+                  Entrar com Google
+                </button>
+                <div style={{ textAlign:"center", marginTop:18, fontSize:11, color:C.muted }}>
+                  Não tem acesso? Fale com um administrador Norva.
+                </div>
+              </>
+            ) : (
+              <>
+                <div style={{ fontSize:13, fontWeight:700, color:C.text, marginBottom:4 }}>Escolher conta Google</div>
+                <div style={{ fontSize:11, color:C.muted, marginBottom:16 }}>Demonstração — selecione seu perfil</div>
+                {MOCK_ACCOUNTS.map(acc => (
+                  <button key={acc.id} onClick={()=>onLogin(acc)}
+                    style={{ display:"flex", alignItems:"center", gap:12, width:"100%", padding:"12px 14px", borderRadius:10, border:`1px solid ${C.border}`, background:C.inputBg, cursor:"pointer", marginBottom:8, textAlign:"left" }}>
+                    <div style={{ width:36, height:36, borderRadius:"50%", background:"linear-gradient(135deg,#6c3fff,#00cfff)", display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontWeight:800, fontSize:13, flexShrink:0 }}>{acc.avatar}</div>
+                    <div>
+                      <div style={{ fontSize:13, fontWeight:600, color:C.text }}>{acc.name}</div>
+                      <div style={{ fontSize:11, color:C.muted }}>{acc.email}</div>
+                    </div>
+                    <div style={{ marginLeft:"auto" }}>
+                      <span style={badge(acc.role==="admin"?"#8b5cf6":acc.role==="vendor"?"#10b981":acc.role==="consultant"?"#f59e0b":"#6c3fff")}>
+                        {acc.role==="admin"?"Admin":acc.role==="vendor"?"Vendedor":acc.role==="consultant"?"Consultor":"Associado"}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+                <button onClick={()=>setPicking(false)} style={{ ...btnO(C), marginTop:4, width:"100%", textAlign:"center" }}>← Voltar</button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -229,10 +455,10 @@ const mockPartners = [
   { emoji:"📚", name:"Livraria Saber",      service:"Educação", discount:"10% em todos os livros",   addr:"Praça do Conhecimento, 10" },
 ];
 const mockClients = [
-  { id:1, name:"João Silva",    plan:"Prime",     planVal:49.90, status:"ativo",     joined:"Jan/25" },
-  { id:2, name:"Maria Souza",   plan:"Progresso", planVal:29.90, status:"ativo",     joined:"Fev/25" },
-  { id:3, name:"Carla Mendes",  plan:"Essencial", planVal:19.90, status:"cancelado", joined:"Dez/24" },
-  { id:4, name:"Pedro Torres",  plan:"Prime",     planVal:49.90, status:"ativo",     joined:"Mar/25" },
+  { id:1, name:"João Silva",    plan:"Prime",     planVal:119.90, status:"ativo",     joined:"Jan/25" },
+  { id:2, name:"Maria Souza",   plan:"Progresso", planVal:59.90,  status:"ativo",     joined:"Fev/25" },
+  { id:3, name:"Carla Mendes",  plan:"Essencial", planVal:19.90,  status:"cancelado", joined:"Dez/24" },
+  { id:4, name:"Pedro Torres",  plan:"Prime",     planVal:119.90, status:"ativo",     joined:"Mar/25" },
 ];
 const mockLeads = [
   { id:1, name:"Fernanda Rocha", phone:"21991234567" },
@@ -485,9 +711,9 @@ function VendorArea({ user, onLogout, dark, toggleDark }) {
   const [newLead, setNewLead] = useState({ name:"", phone:"" });
 
   const sales = [
-    { client:"João Silva",   plan:"Prime",     val:49.90, date:"10/04/25", status:"liberada" },
-    { client:"Pedro Torres", plan:"Prime",     val:49.90, date:"15/04/25", status:"pendente" },
-    { client:"Maria Souza",  plan:"Progresso", val:29.90, date:"20/04/25", status:"liberada" },
+    { client:"João Silva",   plan:"Prime",     val:119.90, date:"10/04/25", status:"liberada" },
+    { client:"Pedro Torres", plan:"Prime",     val:119.90, date:"15/04/25", status:"pendente" },
+    { client:"Maria Souza",  plan:"Progresso", val:59.90,  date:"20/04/25", status:"liberada" },
   ];
   const lib = sales.filter(s=>s.status==="liberada");
   const totalAdh = lib.reduce((a,s)=>a+(s.val*.5),0).toFixed(2);
@@ -537,7 +763,7 @@ function VendorArea({ user, onLogout, dark, toggleDark }) {
             <div key={c.id} style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:12, padding:18, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
               <div>
                 <div style={{ fontWeight:600, fontSize:13, color:C.text }}>{c.name}</div>
-                <div style={{ fontSize:11, color:C.muted }}>Plano {c.plan} · Desde {c.joined} · R$ {c.planVal}/mês</div>
+                <div style={{ fontSize:11, color:C.muted }}>Plano {c.plan} · Desde {c.joined} · R$ {c.planVal.toFixed(2)}/mês</div>
               </div>
               <span style={badge(c.status==="ativo"?C.green:C.red)}>{c.status==="ativo"?"● Ativo":"○ Cancelado"}</span>
             </div>
@@ -690,7 +916,7 @@ function AdminArea({ user, onLogout, dark, toggleDark }) {
 
   const activeClients = mockClients.filter(c=>c.status==="ativo");
   const mrr = activeClients.reduce((a,c)=>a+c.planVal,0);
-  const adhesion = 149.60;
+  const adhesion = 299.70;
   const total = mrr + adhesion;
   const commissions = total*.3;
   const marketing = total*.2;
@@ -760,7 +986,7 @@ function AdminArea({ user, onLogout, dark, toggleDark }) {
         <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14, marginTop:14 }}>
           <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:12, padding:18 }}>
             <div style={{ fontSize:13, fontWeight:600, marginBottom:12, color:C.text }}>Distribuição por plano</div>
-            {[["Prime (R$ 49,90)",2,C.accent],["Progresso (R$ 29,90)",1,C.green],["Essencial (R$ 19,90)",0,C.gold]].map(([l,n,c])=>(
+            {[["Prime (R$ 119,90)",2,C.accent],["Progresso (R$ 59,90)",1,C.green],["Essencial (R$ 19,90)",0,C.gold]].map(([l,n,c])=>(
               <div key={l} style={{ marginBottom:10 }}>
                 <div style={{ display:"flex", justifyContent:"space-between", fontSize:11, marginBottom:3 }}>
                   <span style={{color:C.muted}}>{l}</span><span style={{color:c,fontWeight:700}}>{n} clientes</span>
@@ -771,7 +997,7 @@ function AdminArea({ user, onLogout, dark, toggleDark }) {
           </div>
           <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:12, padding:18 }}>
             <div style={{ fontSize:13, fontWeight:600, marginBottom:12, color:C.text }}>Vendas por vendedor</div>
-            {[{ name:"Carlos Mendes", sales:3, rev:"149,70" }].map((v,i)=>(
+            {[{ name:"Carlos Mendes", sales:3, rev:"299,70" }].map((v,i)=>(
               <div key={i} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"8px 0" }}>
                 <div>
                   <div style={{ fontWeight:600, fontSize:13, color:C.text }}>{v.name}</div>
@@ -905,7 +1131,6 @@ export default function App() {
   if (user.role==="consultant") return <ConsultantArea {...props}/>;
   if (user.role==="admin")      return <AdminArea      {...props}/>;
 }
-// Auto-login component - adicione isso antes do export default
 
 // Wrapper que conecta sessão Supabase ao App
 import { useEffect } from "react";
